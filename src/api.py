@@ -1,6 +1,8 @@
-from fastapi import FastAPI, HTTPException, Query, RedirectResponse
+from fastapi import FastAPI, HTTPException, Query
+from starlette.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from scraper import SpotifyDataFetcher  # Make sure to replace with the correct import path
+from src.scraper import SpotifyDataFetcher
 from dotenv import load_dotenv
 import os
 
@@ -9,7 +11,14 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = "http://localhost:5510/callback"
 
-app = FastAPI()
+app = FastAPI(title="PlaylistScraper")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize the SpotifyDataFetcher instance (without a user_id for now)
 spotify_fetcher = SpotifyDataFetcher(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
