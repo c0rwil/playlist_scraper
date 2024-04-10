@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Query, RedirectResponse
+import uvicorn
 from scraper import SpotifyDataFetcher  # Make sure to replace with the correct import path
 from dotenv import load_dotenv
 import os

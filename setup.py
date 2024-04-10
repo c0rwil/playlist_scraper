@@ -10,7 +10,6 @@ setup(
         'uvicorn',
         'requests',
         'python-dotenv',  # Added to handle environment variables
-        # Include any other dependencies that your project requires
     ],
     entry_points={
         'console_scripts': [
