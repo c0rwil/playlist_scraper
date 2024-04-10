@@ -29,6 +29,16 @@ def read_root():
     return {"message": "Spotify Data Fetcher API"}
 
 
+@app.get("/user-profile")
+def get_user_profile():
+    if not spotify_fetcher.access_token:
+        raise HTTPException(status_code=401, detail="User is not authenticated")
+    try:
+        spotify_fetcher.fetch_user_profile()
+        return spotify_fetcher.user_profile
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @app.get("/login")
 def login():
     # Define the required scopes
@@ -84,16 +94,16 @@ def get_current_authenticated_user():
 
 
 # Endpoint to fetch details for a specific playlist
-@app.get("/playlists/{playlist_id}")
-def playlist_details(playlist_id: str, user: SpotifyDataFetcher = Depends(get_current_authenticated_user)):
-    playlist = user.user_playlists.get(playlist_id)
-    if not playlist:
-        # If we do not have the playlist cached, fetch it again
-        user.fetch_user_playlists()
-        playlist = user.user_playlists.get(playlist_id)
-        if not playlist:
-            raise HTTPException(status_code=404, detail="Playlist not found")
-    return user.fetch_playlist_details(playlist)
+# @app.get("/playlists/{playlist_id}")
+# def playlist_details(playlist_id: str)):
+#     playlist = user.user_playlists.get(playlist_id)
+#     if not playlist:
+#         # If we do not have the playlist cached, fetch it again
+#         user.fetch_user_playlists()
+#         playlist = user.user_playlists.get(playlist_id)
+#         if not playlist:
+#             raise HTTPException(status_code=404, detail="Playlist not found")
+#     return user.fetch_playlist_details(playlist)
 
 
 def run():
