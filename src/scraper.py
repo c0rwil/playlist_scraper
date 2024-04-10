@@ -116,6 +116,19 @@ class SpotifyDataFetcher:
             for track in data['items']
         ]
 
+    def fetch_user_profile(self):
+        """
+        Fetch the user's profile information, including their profile picture.
+        """
+        base_url = 'https://api.spotify.com/v1/me'
+        response = requests.get(base_url, headers=self.set_headers())
+        data = response.json()
+
+        self.user_profile = {
+            'display_name': data['display_name'],
+            'profile_picture': data['images'][0]['url'] if data['images'] else None
+        }
+
     def fetch_playlist_details(self, playlist):
         """
         Fetch detailed information for a single playlist.
