@@ -76,5 +76,25 @@ def playlists():
     return spotify_fetcher.user_playlists
 
 
+# Dependency to ensure the user is authenticated
+def get_current_authenticated_user():
+    if not spotify_fetcher.access_token:
+        raise HTTPException(status_code=401, detail="User is not authenticated")
+    return spotify_fetcher
+
+
+# Endpoint to fetch details for a specific playlist
+@app.get("/playlists/{playlist_id}")
+def playlist_details(playlist_id: str, user: SpotifyDataFetcher = Depends(get_current_authenticated_user)):
+    playlist = user.user_playlists.get(playlist_id)
+    if not playlist:
+        # If we do not have the playlist cached, fetch it again
+        user.fetch_user_playlists()
+        playlist = user.user_playlists.get(playlist_id)
+        if not playlist:
+            raise HTTPException(status_code=404, detail="Playlist not found")
+    return user.fetch_playlist_details(playlist)
+
+
 def run():
     uvicorn.run("src.api:app", host="localhost", port=5510, reload=True)
